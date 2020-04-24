@@ -8,12 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		175CBAA42451687F00829426 /* AssetDownloadWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CBAA22451687F00829426 /* AssetDownloadWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		175CBAAB2451914300829426 /* AssetDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175CBAAA2451914300829426 /* AssetDownloadManager.swift */; };
+		175CBAAD245192C200829426 /* AssetWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175CBAAC245192C200829426 /* AssetWrapper.swift */; };
+		175CBAAF2451982300829426 /* DataCacher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175CBAAE2451982300829426 /* DataCacher.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		175CBA9F2451687F00829426 /* AssetDownloadWrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AssetDownloadWrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		175CBAA22451687F00829426 /* AssetDownloadWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AssetDownloadWrapper.h; sourceTree = "<group>"; };
 		175CBAA32451687F00829426 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		175CBAAA2451914300829426 /* AssetDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDownloadManager.swift; sourceTree = "<group>"; };
+		175CBAAC245192C200829426 /* AssetWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetWrapper.swift; sourceTree = "<group>"; };
+		175CBAAE2451982300829426 /* DataCacher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacher.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +54,9 @@
 			children = (
 				175CBAA22451687F00829426 /* AssetDownloadWrapper.h */,
 				175CBAA32451687F00829426 /* Info.plist */,
+				175CBAAA2451914300829426 /* AssetDownloadManager.swift */,
+				175CBAAC245192C200829426 /* AssetWrapper.swift */,
+				175CBAAE2451982300829426 /* DataCacher.swift */,
 			);
 			path = AssetDownloadWrapper;
 			sourceTree = "<group>";
@@ -95,6 +104,7 @@
 				TargetAttributes = {
 					175CBA9E2451687F00829426 = {
 						CreatedOnToolsVersion = 11.4.1;
+						LastSwiftMigration = 1140;
 					};
 				};
 			};
@@ -131,6 +141,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				175CBAAB2451914300829426 /* AssetDownloadManager.swift in Sources */,
+				175CBAAF2451982300829426 /* DataCacher.swift in Sources */,
+				175CBAAD245192C200829426 /* AssetWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +273,7 @@
 		175CBAA82451687F00829426 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = ZUBT77449H;
@@ -277,6 +291,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "t-osawa-009.AssetDownloadWrapper";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -285,6 +300,7 @@
 		175CBAA92451687F00829426 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = ZUBT77449H;
