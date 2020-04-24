@@ -27,6 +27,19 @@ open class AssetDownloadManager: NSObject {
         self.progressHandler = progressHandler
     }
     
+    public func retrieveLocalAsset(with assetTitle: String) -> (AssetWrapper, URL)? {
+        guard let data = DataCacher.default.readDataFromDisk(forKey: assetTitle) else { return nil }
+        var bookmarkDataIsStale = false
+        if let url = try? URL(resolvingBookmarkData: data,
+                              bookmarkDataIsStale: &bookmarkDataIsStale) {
+            let urlAsset = AVURLAsset(url: url)
+            let asset = AssetWrapper(urlAsset: urlAsset, assetTitle: assetTitle)
+            return (asset, url)
+        } else {
+            return nil
+        }
+    }
+    
     public func removeAllData() {
         let dataArray = DataCacher.default.allData()
         dataArray.forEach { (data) in
@@ -80,19 +93,6 @@ open class AssetDownloadManager: NSObject {
     }
     
     // MARK: - private
-    private func retrieveLocalAsset(with assetTitle: String) -> (AssetWrapper, URL)? {
-        guard let data = DataCacher.default.readDataFromDisk(forKey: assetTitle) else { return nil }
-        var bookmarkDataIsStale = false
-        if let url = try? URL(resolvingBookmarkData: data,
-                              bookmarkDataIsStale: &bookmarkDataIsStale) {
-            let urlAsset = AVURLAsset(url: url)
-            let asset = AssetWrapper(urlAsset: urlAsset, assetTitle: assetTitle)
-            return (asset, url)
-        } else {
-            return nil
-        }
-    }
-    
     /// https://gist.github.com/toshi0383/13de25b0b6ab55f33b6c80760b706867
     private func findSize(at directoryPath: String) -> Int64? {
         
