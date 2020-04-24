@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:AssetDownloadWrapper-Sample/AssetDownloadWrapper-Sample.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:AssetDownloadWrapper.xcodeproj">
    </FileRef>
 </Workspace>
