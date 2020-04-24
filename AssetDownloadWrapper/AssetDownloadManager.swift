@@ -49,7 +49,7 @@ open class AssetDownloadManager: NSObject {
                 do {
                     try FileManager.default.removeItem(at: url)
                 } catch {
-
+                    
                 }
             }
         }
@@ -179,16 +179,16 @@ extension AssetDownloadManager: AVAssetDownloadDelegate {
         aggregateAssetDownloadTask.resume()
     }
     
-    public func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue], timeRangeExpectedToLoad: CMTimeRange) {
-        var percentComplete: CGFloat = 0.0
+    public func urlSession(_ session: URLSession, aggregateAssetDownloadTask: AVAggregateAssetDownloadTask,
+                           didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue],
+                           timeRangeExpectedToLoad: CMTimeRange, for mediaSelection: AVMediaSelection) {
+        var percentComplete = 0.0
         for value in loadedTimeRanges {
             let loadedTimeRange: CMTimeRange = value.timeRangeValue
             percentComplete +=
-                CGFloat(CMTimeGetSeconds(loadedTimeRange.duration) / CMTimeGetSeconds(timeRangeExpectedToLoad.duration))
-            
+                loadedTimeRange.duration.seconds / timeRangeExpectedToLoad.duration.seconds
         }
-        
-        progressHandler?(percentComplete)
+        progressHandler?(CGFloat(percentComplete))
     }
 }
 
