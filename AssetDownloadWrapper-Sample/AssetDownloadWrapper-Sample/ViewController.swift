@@ -12,17 +12,13 @@ import MediaPlayer
 import AVKit
 
 class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
-
+    // MARK: - private
     @IBAction private func startButtonTapped(_ sender: Any) {
         startButton.isEnabled = false
-        let urlAsset = AVURLAsset(url: URL(string: "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8")!)
-        AssetDownloadManager.shared.downloadStream(for: .init(urlAsset: urlAsset, assetTitle: "bipbop_4x3_variant"), progressHandler: { [weak self] (progress) in
+        let urlAsset = AVURLAsset(url: Self.url)
+        AssetDownloadManager.shared.downloadStream(for: .init(urlAsset: urlAsset, assetTitle: Self.name), progressHandler: { [weak self] (progress) in
             self?.progressLabel.text = progress.description
+            self?.progressView.setProgress(.init(progress), animated: true)
         }) { [weak self] (result) in
             switch result {
             case .success(_):
@@ -39,11 +35,10 @@ class ViewController: UIViewController {
     }
     
     @IBAction private func startMovieButtonTapped(_ sender: Any) {
-        guard let arg = AssetDownloadManager.shared.retrieveLocalAsset(with: "bipbop_4x3_variant") else {
+        guard let arg = AssetDownloadManager.shared.retrieveLocalAsset(with: Self.name) else {
             return
         }
         let vc = AVPlayerViewController()
-        // AVPlayerにアイテムをセット
         let item = AVPlayerItem(asset: arg.0.urlAsset)
         player.replaceCurrentItem(with: item)
         vc.player = player
@@ -53,5 +48,8 @@ class ViewController: UIViewController {
     private var player = AVPlayer()
     @IBOutlet private weak var progressLabel: UILabel!
     @IBOutlet private weak var startButton: UIButton!
+    @IBOutlet private weak var progressView: UIProgressView!
+    private static let name = "bipbop_4x3_variant"
+    private static let url = URL(string: "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8")!
 }
 
