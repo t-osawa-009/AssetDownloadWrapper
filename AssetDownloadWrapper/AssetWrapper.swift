@@ -9,7 +9,7 @@
 import AVFoundation
 import Foundation
 
-public struct AssetWrapper {
+public struct AssetWrapper: Equatable {
     // MARK: - public
     public let urlAsset: AVURLAsset
     public let assetTitle: String

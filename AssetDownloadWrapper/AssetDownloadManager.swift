@@ -9,22 +9,30 @@
 import AVFoundation
 import Foundation
 
+public enum AssetDownloadManagerError: Error {
+    case notSupport
+    case taskInitFail
+}
+
 open class AssetDownloadManager: NSObject {
     // MARK: - public
-    public func downloadStream(for asset: AssetWrapper, progressHandler: ((CGFloat) -> Void)? = nil, completion: ((Result<Data, Error>) -> Void)? = nil) {
+    public func downloadStream(for asset: AssetWrapper, options: [String : Any]? = AssetDownloadManager.options, progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)? = nil, completion: ((Result<AssetWrapper, Error>) -> Void)? = nil) {
+        #if targetEnvironment(simulator)
+        completion?(.failure(AssetDownloadManagerError.notSupport))
+        #else
         let preferredMediaSelection = asset.urlAsset.preferredMediaSelection
         guard let task =
-            assetDownloadURLSession.aggregateAssetDownloadTask(with: asset.urlAsset,
-                                                               mediaSelections: [preferredMediaSelection],
-                                                               assetTitle: asset.assetTitle,
-                                                               assetArtworkData: nil,
-                                                               options:
-                [AVAssetDownloadTaskMinimumRequiredMediaBitrateKey: 265_000]) else { return }
+            assetDownloadURLSession.aggregateAssetDownloadTask(with: asset.urlAsset, mediaSelections: [preferredMediaSelection], assetTitle: asset.assetTitle, assetArtworkData: nil, options: options) else {
+                completion?(.failure(AssetDownloadManagerError.taskInitFail))
+                return
+        }
         
         task.taskDescription = asset.assetTitle
+        activeDownloadsDictionary[task] = asset
         task.resume()
         self.downloadHandler = completion
         self.progressHandler = progressHandler
+        #endif
     }
     
     public func retrieveLocalAsset(with assetTitle: String) -> (AssetWrapper, URL)? {
@@ -57,6 +65,19 @@ open class AssetDownloadManager: NSObject {
         DataCacher.default.cleanDiskCache()
     }
     
+    public func deleteData(_ asset: AssetWrapper, completion: ((Result<Void, Error>) -> Void)? = nil) {
+        guard let localFileLocation = retrieveLocalAsset(with: asset.assetTitle)?.0.urlAsset.url else {
+            return
+        }
+        do {
+            try FileManager.default.removeItem(at: localFileLocation)
+            DataCacher.default.clean(byKey: asset.assetTitle)
+            completion?(.success(()))
+        } catch {
+            completion?(.failure(error))
+        }
+    }
+    
     public func cacheSizeString() -> String? {
         let dataArray = DataCacher.default.allData()
         let urls: [URL] = dataArray.compactMap({ data in
@@ -79,7 +100,20 @@ open class AssetDownloadManager: NSObject {
         }
         return ByteCountFormatter.string(fromByteCount: sum, countStyle: .file)
     }
+    
+    public func cancelDownload(for asset: AssetWrapper) {
+        var task: AVAggregateAssetDownloadTask?
+        
+        for (taskKey, assetVal) in activeDownloadsDictionary where asset == assetVal {
+            task = taskKey
+            break
+        }
+        
+        task?.cancel()
+    }
+    
     public static let shared = AssetDownloadManager()
+    public static let options: [String : Any] = [AVAssetDownloadTaskMinimumRequiredMediaBitrateKey: 265_000]
     
     // MARK: - initializer
     override private init() {
@@ -129,14 +163,17 @@ open class AssetDownloadManager: NSObject {
     private var assetDownloadURLSession: AVAssetDownloadURLSession!
     private var didRestorePersistenceManager = false
     private var willDownloadToUrlDictionary: [AVAggregateAssetDownloadTask: URL] = [:]
-    private var downloadHandler: ((Result<Data, Error>) -> Void)?
-    private var progressHandler: ((CGFloat) -> Void)?
+    private var activeDownloadsDictionary: [AVAggregateAssetDownloadTask: AssetWrapper] = [:]
+    private var downloadHandler: ((Result<AssetWrapper, Error>) -> Void)?
+    private var progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)?
 }
 
 // MARK: - AVAssetDownloadDelegate
 extension AssetDownloadManager: AVAssetDownloadDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let task = task as? AVAggregateAssetDownloadTask else { return }
+        guard let task = task as? AVAggregateAssetDownloadTask,
+            let asset = activeDownloadsDictionary.removeValue(forKey: task) else { return }
+        
         guard let downloadURL = willDownloadToUrlDictionary.removeValue(forKey: task) else { return }
         if let error = error as NSError? {
             switch (error.domain, error.code) {
@@ -161,7 +198,7 @@ extension AssetDownloadManager: AVAssetDownloadDelegate {
                 if let name = task.taskDescription {
                     let bookmark = try downloadURL.bookmarkData()
                     DataCacher.default.write(data: bookmark, forKey: name)
-                    downloadHandler?(.success(bookmark))
+                    downloadHandler?(.success(asset))
                 }
             } catch let _error {
                 downloadHandler?(.failure(_error))
@@ -176,19 +213,22 @@ extension AssetDownloadManager: AVAssetDownloadDelegate {
     
     public func urlSession(_ session: URLSession, aggregateAssetDownloadTask: AVAggregateAssetDownloadTask,
                            didCompleteFor mediaSelection: AVMediaSelection) {
+        guard let asset = activeDownloadsDictionary[aggregateAssetDownloadTask] else { return }
+        aggregateAssetDownloadTask.taskDescription = asset.assetTitle
         aggregateAssetDownloadTask.resume()
     }
     
     public func urlSession(_ session: URLSession, aggregateAssetDownloadTask: AVAggregateAssetDownloadTask,
                            didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue],
                            timeRangeExpectedToLoad: CMTimeRange, for mediaSelection: AVMediaSelection) {
+        guard let asset = activeDownloadsDictionary[aggregateAssetDownloadTask] else { return }
         var percentComplete = 0.0
         for value in loadedTimeRanges {
             let loadedTimeRange: CMTimeRange = value.timeRangeValue
             percentComplete +=
                 loadedTimeRange.duration.seconds / timeRangeExpectedToLoad.duration.seconds
         }
-        progressHandler?(CGFloat(percentComplete))
+        progressHandler?(asset, CGFloat(percentComplete))
     }
 }
 
