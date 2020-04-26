@@ -36,7 +36,7 @@
 		175CBA952451687F00829426 = {
 			isa = PBXGroup;
 			children = (
-				175CBAA12451687F00829426 /* AssetDownloadWrapper */,
+				175CBAA12451687F00829426 /* Sources */,
 				175CBAA02451687F00829426 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,7 +49,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		175CBAA12451687F00829426 /* AssetDownloadWrapper */ = {
+		175CBAA12451687F00829426 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				175CBAA22451687F00829426 /* AssetDownloadWrapper.h */,
@@ -58,7 +58,7 @@
 				175CBAAC245192C200829426 /* AssetWrapper.swift */,
 				175CBAAE2451982300829426 /* DataCacher.swift */,
 			);
-			path = AssetDownloadWrapper;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +273,7 @@
 		175CBAA82451687F00829426 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -280,7 +281,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = AssetDownloadWrapper/Info.plist;
+				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -301,6 +302,7 @@
 		175CBAA92451687F00829426 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -308,7 +310,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = AssetDownloadWrapper/Info.plist;
+				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
