@@ -67,6 +67,7 @@ $ carthage update
 - https://developer.apple.com/documentation/avfoundation/media_assets_playback_and_editing/using_avfoundation_to_play_and_persist_http_live_streams
 
 ## CONTRIBUTING
+There's still a lot of work to do here. We would love to see you involved. You can find all the details on how to get started in the [Contributing Guide](https://github.com/t-osawa-009/AssetDownloadWrapper/blob/master/CONTRIBUTING.md).
 
 ## License
 AssetDownloadWrapper is released under the MIT license. See LICENSE for details.
