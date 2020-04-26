@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "AssetDownloadWrapper"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "iOS AVAssetDownloadURLSession Wrapper"
   spec.homepage     = "https://github.com/t-osawa-009/AssetDownloadWrapper"
   spec.license      = "MIT"
