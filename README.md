@@ -1,5 +1,5 @@
 # AssetDownloadWrapper
-iOS AVAssetDownloadURLSession Wrapper
+A wrapper to download videos using AVAssetDownloadURLSession.
 
 ## About
 This is the library that wraps the function of AVAssetDownloadURLSession.
