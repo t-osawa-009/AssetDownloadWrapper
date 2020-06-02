@@ -35,6 +35,32 @@ open class AssetDownloadManager: NSObject {
         #endif
     }
     
+    public func makeAVPlayerItem(for asset: AssetWrapper, options: [String : Any]? = AssetDownloadManager.options, progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)? = nil, completion: ((Result<AssetWrapper, Error>) -> Void)? = nil) -> AVPlayerItem? {
+        #if targetEnvironment(simulator)
+        completion?(.failure(AssetDownloadManagerError.notSupport))
+        return nil
+        #else
+        let preferredMediaSelection = asset.urlAsset.preferredMediaSelection
+        guard let task =
+            assetDownloadURLSession.aggregateAssetDownloadTask(with: asset.urlAsset,
+                                                               mediaSelections: [preferredMediaSelection],
+                                                               assetTitle: asset.assetTitle,
+                                                               assetArtworkData: nil,
+                                                               options: options) else {
+                                                                completion?(.failure(AssetDownloadManagerError.taskInitFail))
+                                                                return nil
+        }
+        
+        task.taskDescription = asset.assetTitle
+        activeDownloadsDictionary[task] = asset
+        task.resume()
+        self.downloadHandler = completion
+        self.progressHandler = progressHandler
+        let playerItem = AVPlayerItem(asset: task.urlAsset)
+        return playerItem
+        #endif
+    }
+    
     public func retrieveLocalAsset(with assetTitle: String) -> (AssetWrapper, URL)? {
         guard let data = DataCacher.default.readDataFromDisk(forKey: assetTitle) else { return nil }
         var bookmarkDataIsStale = false
