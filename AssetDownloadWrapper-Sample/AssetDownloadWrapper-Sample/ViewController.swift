@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     @IBAction private func startButtonTapped(_ sender: Any) {
         startButton.isEnabled = false
         let urlAsset = AVURLAsset(url: Self.url)
-        AssetDownloadManager.shared.downloadStream(for: .init(urlAsset: urlAsset, assetTitle: Self.name), progressHandler: { [weak self] (progress) in
+        AssetDownloadManager.shared.downloadStream(for: .init(urlAsset: urlAsset, assetTitle: Self.name), progressHandler: { [weak self] (_, progress) in
             self?.progressLabel.text = progress.description
             self?.progressView.setProgress(.init(progress), animated: true)
         }) { [weak self] (result) in
@@ -40,6 +40,31 @@ class ViewController: UIViewController {
         }
         let vc = AVPlayerViewController()
         let item = AVPlayerItem(asset: arg.0.urlAsset)
+        player.replaceCurrentItem(with: item)
+        vc.player = player
+        present(vc, animated: true, completion: nil)
+    }
+    
+    @IBAction private func startAndLoadButtonTapped(_ sender: Any) {
+        let urlAsset = AVURLAsset(url: Self.url)
+        let item = AssetDownloadManager.shared.makeDownloadStreamAndAVPlayerItem(for: .init(urlAsset: urlAsset, assetTitle: Self.name), progressHandler: { [weak self] (_, progress) in
+            self?.progressLabel.text = progress.description
+            self?.progressView.setProgress(.init(progress), animated: true)
+        }) { [weak self] (result) in
+            switch result {
+            case .success(_):
+                let ac = UIAlertController(title: "Success", message: nil, preferredStyle: .alert)
+                ac.addAction(.init(title: "ok", style: .default, handler: nil))
+                self?.present(ac, animated: true, completion: nil)
+            case .failure(let error):
+                let ac = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                ac.addAction(.init(title: "ok", style: .default, handler: nil))
+                self?.present(ac, animated: true, completion: nil)
+            }
+            self?.startButton.isEnabled = true
+        }
+        
+        let vc = AVPlayerViewController()
         player.replaceCurrentItem(with: item)
         vc.player = player
         present(vc, animated: true, completion: nil)

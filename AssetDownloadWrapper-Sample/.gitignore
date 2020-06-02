@@ -15,7 +15,7 @@
 *.xcuserstate
 .DS_Store
 .build/
-Carthage/Build
+Carthage/
 DerivedData/
 Pods/
 build/
