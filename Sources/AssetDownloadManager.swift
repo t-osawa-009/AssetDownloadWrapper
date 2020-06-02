@@ -128,7 +128,7 @@ open class AssetDownloadManager: NSObject {
     }
     
     public func cancelDownload(for asset: AssetWrapper) {
-        var task: AVAggregateAssetDownloadTask?
+        var task: URLSessionTask?
         
         for (taskKey, assetVal) in activeDownloadsDictionary where asset == assetVal {
             task = taskKey
@@ -188,8 +188,8 @@ open class AssetDownloadManager: NSObject {
     
     private var assetDownloadURLSession: AVAssetDownloadURLSession!
     private var didRestorePersistenceManager = false
-    private var willDownloadToUrlDictionary: [AVAggregateAssetDownloadTask: URL] = [:]
-    private var activeDownloadsDictionary: [AVAggregateAssetDownloadTask: AssetWrapper] = [:]
+    private var willDownloadToUrlDictionary: [URLSessionTask: URL] = [:]
+    private var activeDownloadsDictionary: [URLSessionTask: AssetWrapper] = [:]
     private var downloadHandler: ((Result<AssetWrapper, Error>) -> Void)?
     private var progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)?
 }
