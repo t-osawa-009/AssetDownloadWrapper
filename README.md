@@ -1,5 +1,5 @@
 # AssetDownloadWrapper
-iOS AVAssetDownloadURLSession Wrapper
+A wrapper to download videos using AVAssetDownloadURLSession.
 
 ## About
 This is the library that wraps the function of AVAssetDownloadURLSession.
@@ -65,6 +65,7 @@ $ carthage update
 ## Reference Resources
 - https://blog.foresta.me/posts/swift_hls_download_bug/
 - https://developer.apple.com/documentation/avfoundation/media_assets_playback_and_editing/using_avfoundation_to_play_and_persist_http_live_streams
+- https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/MediaPlaybackGuide/Contents/Resources/en.lproj/HTTPLiveStreaming/HTTPLiveStreaming.html#//apple_ref/doc/uid/TP40016757-CH11-SW1
 
 ## CONTRIBUTING
 There's still a lot of work to do here. We would love to see you involved. You can find all the details on how to get started in the [Contributing Guide](https://github.com/t-osawa-009/AssetDownloadWrapper/blob/master/CONTRIBUTING.md).
