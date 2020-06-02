@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     @IBAction private func startButtonTapped(_ sender: Any) {
         startButton.isEnabled = false
         let urlAsset = AVURLAsset(url: Self.url)
-        AssetDownloadManager.shared.downloadStream(for: .init(urlAsset: urlAsset, assetTitle: Self.name), progressHandler: { [weak self] (_, progress) in
+        AssetDownloadManager.shared.download(asset: .init(urlAsset: urlAsset, assetTitle: Self.name), progressHandler: { [weak self] (_, progress) in
             self?.progressLabel.text = progress.description
             self?.progressView.setProgress(.init(progress), animated: true)
         }) { [weak self] (result) in
