@@ -39,7 +39,9 @@
 				175CBAA12451687F00829426 /* Sources */,
 				175CBAA02451687F00829426 /* Products */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
 		};
 		175CBAA02451687F00829426 /* Products */ = {
 			isa = PBXGroup;
