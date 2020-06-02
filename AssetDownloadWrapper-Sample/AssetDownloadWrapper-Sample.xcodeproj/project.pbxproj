@@ -13,7 +13,7 @@
 		1712771F24530A00001CF39D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1712771D24530A00001CF39D /* Main.storyboard */; };
 		1712772124530A02001CF39D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1712772024530A02001CF39D /* Assets.xcassets */; };
 		1712772424530A02001CF39D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1712772224530A02001CF39D /* LaunchScreen.storyboard */; };
-		6EB2A4D02485F8DC007EA9FD /* AssetDownloadWrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EB2A4CF2485F8DC007EA9FD /* AssetDownloadWrapper.framework */; };
+		6EB2A4D12486013E007EA9FD /* AssetDownloadWrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6EB2A4CF2485F8DC007EA9FD /* AssetDownloadWrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,6 +23,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				6EB2A4D12486013E007EA9FD /* AssetDownloadWrapper.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -46,7 +47,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6EB2A4D02485F8DC007EA9FD /* AssetDownloadWrapper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
