@@ -35,7 +35,7 @@ open class AssetDownloadManager: NSObject {
         #endif
     }
     
-    public func makeAVPlayerItem(for asset: AssetWrapper, options: [String : Any]? = AssetDownloadManager.options, progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)? = nil, completion: ((Result<AssetWrapper, Error>) -> Void)? = nil) -> AVPlayerItem? {
+    public func makeDownloadStreamAndAVPlayerItem(for asset: AssetWrapper, options: [String : Any]? = AssetDownloadManager.options, progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)? = nil, completion: ((Result<AssetWrapper, Error>) -> Void)? = nil) -> AVPlayerItem? {
         #if targetEnvironment(simulator)
         completion?(.failure(AssetDownloadManagerError.notSupport))
         return nil
