@@ -222,8 +222,7 @@ open class AssetDownloadManager: NSObject {
 // MARK: - AVAssetDownloadDelegate
 extension AssetDownloadManager: AVAssetDownloadDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let task = task as? URLSessionTask,
-            let asset = activeDownloadsDictionary.removeValue(forKey: task) else { return }
+        guard let asset = activeDownloadsDictionary.removeValue(forKey: task) else { return }
         
         guard let downloadURL = willDownloadToUrlDictionary.removeValue(forKey: task) else { return }
         if let error = error as NSError? {
