@@ -61,6 +61,31 @@ open class AssetDownloadManager: NSObject {
         #endif
     }
     
+    public func download(asset: AssetWrapper,
+                         options: [String : Any]? = AssetDownloadManager.options,
+                         progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)? = nil,
+                         completion: ((Result<AssetWrapper, Error>) -> Void)? = nil) {
+        #if targetEnvironment(simulator)
+        completion?(.failure(AssetDownloadManagerError.notSupport))
+        #else
+        guard let task = assetDownloadURLSession
+            .makeAssetDownloadTask(
+                asset: asset.urlAsset,
+                assetTitle: asset.assetTitle,
+                assetArtworkData: nil,
+                options: options) else {
+                    return
+        }
+        
+        task.taskDescription = asset.assetTitle
+        activeDownloadsDictionary[task] = asset
+        task.resume()
+        
+        self.downloadHandler = completion
+        self.progressHandler = progressHandler
+        #endif
+    }
+    
     public func retrieveLocalAsset(with assetTitle: String) -> (AssetWrapper, URL)? {
         guard let data = DataCacher.default.readDataFromDisk(forKey: assetTitle) else { return nil }
         var bookmarkDataIsStale = false
@@ -128,7 +153,7 @@ open class AssetDownloadManager: NSObject {
     }
     
     public func cancelDownload(for asset: AssetWrapper) {
-        var task: AVAggregateAssetDownloadTask?
+        var task: URLSessionTask?
         
         for (taskKey, assetVal) in activeDownloadsDictionary where asset == assetVal {
             task = taskKey
@@ -188,8 +213,8 @@ open class AssetDownloadManager: NSObject {
     
     private var assetDownloadURLSession: AVAssetDownloadURLSession!
     private var didRestorePersistenceManager = false
-    private var willDownloadToUrlDictionary: [AVAggregateAssetDownloadTask: URL] = [:]
-    private var activeDownloadsDictionary: [AVAggregateAssetDownloadTask: AssetWrapper] = [:]
+    private var willDownloadToUrlDictionary: [URLSessionTask: URL] = [:]
+    private var activeDownloadsDictionary: [URLSessionTask: AssetWrapper] = [:]
     private var downloadHandler: ((Result<AssetWrapper, Error>) -> Void)?
     private var progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)?
 }
@@ -197,7 +222,7 @@ open class AssetDownloadManager: NSObject {
 // MARK: - AVAssetDownloadDelegate
 extension AssetDownloadManager: AVAssetDownloadDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let task = task as? AVAggregateAssetDownloadTask,
+        guard let task = task as? URLSessionTask,
             let asset = activeDownloadsDictionary.removeValue(forKey: task) else { return }
         
         guard let downloadURL = willDownloadToUrlDictionary.removeValue(forKey: task) else { return }
@@ -232,6 +257,8 @@ extension AssetDownloadManager: AVAssetDownloadDelegate {
         }
     }
     
+    // MARK: - Aggregate download
+
     public func urlSession(_ session: URLSession, aggregateAssetDownloadTask: AVAggregateAssetDownloadTask,
                            willDownloadTo location: URL) {
         willDownloadToUrlDictionary[aggregateAssetDownloadTask] = location
@@ -247,7 +274,30 @@ extension AssetDownloadManager: AVAssetDownloadDelegate {
     public func urlSession(_ session: URLSession, aggregateAssetDownloadTask: AVAggregateAssetDownloadTask,
                            didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue],
                            timeRangeExpectedToLoad: CMTimeRange, for mediaSelection: AVMediaSelection) {
-        guard let asset = activeDownloadsDictionary[aggregateAssetDownloadTask] else { return }
+        updateProgress(assetDownloadTask: aggregateAssetDownloadTask,
+                       totalTimeRangesLoaded: loadedTimeRanges,
+                       timeRangeExpectedToLoad: timeRangeExpectedToLoad)
+    }
+    
+    // MARK: - Single Download
+    
+    public func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask,
+                           didFinishDownloadingTo location: URL) {
+        willDownloadToUrlDictionary[assetDownloadTask] = location
+    }
+    
+    public func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask,
+                           didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue],
+                           timeRangeExpectedToLoad: CMTimeRange) {
+        updateProgress(assetDownloadTask: assetDownloadTask,
+                       totalTimeRangesLoaded: loadedTimeRanges,
+                       timeRangeExpectedToLoad: timeRangeExpectedToLoad)
+    }
+    
+    func updateProgress(assetDownloadTask: URLSessionTask,
+                        totalTimeRangesLoaded loadedTimeRanges: [NSValue],
+                        timeRangeExpectedToLoad: CMTimeRange) {
+        guard let asset = activeDownloadsDictionary[assetDownloadTask] else { return }
         var percentComplete = 0.0
         for value in loadedTimeRanges {
             let loadedTimeRange: CMTimeRange = value.timeRangeValue
