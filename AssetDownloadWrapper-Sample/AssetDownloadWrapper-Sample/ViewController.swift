@@ -45,6 +45,16 @@ class ViewController: UIViewController {
         present(vc, animated: true, completion: nil)
     }
     
+    @IBAction private func cancelButtonTapped(_ sender: Any) {
+        AssetDownloadManager.shared
+            .cancelDownload(
+                for: .init(
+                    urlAsset: .init(url: Self.url),
+                    assetTitle: Self.name
+                )
+        )
+    }
+    
     @IBAction private func startAndLoadButtonTapped(_ sender: Any) {
         let urlAsset = AVURLAsset(url: Self.url)
         let item = AssetDownloadManager.shared.makeDownloadStreamAndAVPlayerItem(for: .init(urlAsset: urlAsset, assetTitle: Self.name), progressHandler: { [weak self] (_, progress) in
