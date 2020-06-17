@@ -63,27 +63,41 @@ open class AssetDownloadManager: NSObject {
     
     public func download(asset: AssetWrapper,
                          options: [String : Any]? = AssetDownloadManager.options,
-                         progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)? = nil,
-                         completion: ((Result<AssetWrapper, Error>) -> Void)? = nil) {
+                         progressHandler: DownloadProgress? = nil,
+                         completion: DownloadComplete? = nil) {
         #if targetEnvironment(simulator)
         completion?(.failure(AssetDownloadManagerError.notSupport))
         #else
-        guard let task = assetDownloadURLSession
-            .makeAssetDownloadTask(
-                asset: asset.urlAsset,
-                assetTitle: asset.assetTitle,
-                assetArtworkData: nil,
-                options: options) else {
-                    return
-        }
         
-        task.taskDescription = asset.assetTitle
-        activeDownloadsDictionary[task] = asset
-        task.resume()
+        if !activeDownloadsDictionary.contains(where: { $0.value == asset }) {
+            // Start new download:
+            guard let task = assetDownloadURLSession
+                .makeAssetDownloadTask(
+                    asset: asset.urlAsset,
+                    assetTitle: asset.assetTitle,
+                    assetArtworkData: nil,
+                    options: options) else { return }
+            
+            task.taskDescription = asset.assetTitle
+            activeDownloadsDictionary[task] = asset
+            task.resume()
+        }
         
         self.downloadHandler = completion
         self.progressHandler = progressHandler
         #endif
+    }
+    
+    public func activeDownload(with asset: AssetWrapper,
+                               progressHandler: DownloadProgress? = nil,
+                               completion: DownloadComplete? = nil) -> URLSessionTask? {
+        guard let task = activeDownloadsDictionary.first(where: { $0.value == asset })?.key else {
+            return nil
+        }
+        self.downloadHandler = completion
+        self.progressHandler = progressHandler
+        
+        return task
     }
     
     public func retrieveLocalAsset(with assetTitle: String) -> (AssetWrapper, URL)? {
@@ -215,8 +229,11 @@ open class AssetDownloadManager: NSObject {
     private var didRestorePersistenceManager = false
     private var willDownloadToUrlDictionary: [URLSessionTask: URL] = [:]
     private var activeDownloadsDictionary: [URLSessionTask: AssetWrapper] = [:]
-    private var downloadHandler: ((Result<AssetWrapper, Error>) -> Void)?
-    private var progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)?
+    private var downloadHandler: DownloadComplete?
+    private var progressHandler: DownloadProgress?
+    
+    public typealias DownloadProgress = ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)
+    public typealias DownloadComplete = ((Result<AssetWrapper, Error>) -> Void)
 }
 
 // MARK: - AVAssetDownloadDelegate
