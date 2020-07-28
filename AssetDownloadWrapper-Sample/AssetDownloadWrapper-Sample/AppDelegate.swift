@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AssetDownloadWrapper
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -32,6 +33,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
+    func application(_ application: UIApplication,
+                     handleEventsForBackgroundURLSession identifier: String,
+                     completionHandler: @escaping () -> Void) {
+        AssetDownloadManager.shared.backgroundCompletionHandler = completionHandler
+    }
 
 }
 
