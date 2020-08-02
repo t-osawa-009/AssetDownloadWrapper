@@ -16,6 +16,9 @@ public enum AssetDownloadManagerError: Error {
 
 open class AssetDownloadManager: NSObject {
     // MARK: - public
+    
+    public var backgroundCompletionHandler: (() -> Void)?
+
     public func downloadStream(for asset: AssetWrapper, options: [String : Any]? = AssetDownloadManager.options, progressHandler: ((_ asset: AssetWrapper, _ progress: CGFloat) -> Void)? = nil, completion: ((Result<AssetWrapper, Error>) -> Void)? = nil) {
         #if targetEnvironment(simulator)
         completion?(.failure(AssetDownloadManagerError.notSupport))
@@ -270,6 +273,15 @@ extension AssetDownloadManager: AVAssetDownloadDelegate {
             } catch let _error {
                 downloadHandler?(.failure(_error))
             }
+        }
+    }
+    
+    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        DispatchQueue.main.async { [unowned self] in
+            guard let backgroundCompletionHandler = self.backgroundCompletionHandler else {
+                return
+            }
+            backgroundCompletionHandler()
         }
     }
     
